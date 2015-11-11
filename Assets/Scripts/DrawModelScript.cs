@@ -40,7 +40,6 @@ public class DrawModelScript : MonoBehaviour {
             _webcamTex2ScreenScale.y = Screen.height / t2sHeight;
         }
 
-
         UpdateMatrix();
 
     }

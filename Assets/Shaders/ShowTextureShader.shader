@@ -1,4 +1,4 @@
-﻿Shader "Unlit/PaintingShader"
+﻿Shader "Unlit/ShowTextureShader"
 {
 	Properties
 	{
@@ -8,7 +8,6 @@
 	{
 		Tags { "RenderType"="Opaque" }
 		LOD 100
-
 
 		Pass
 		{
@@ -31,36 +30,27 @@
 			};
 
 			sampler2D _MainTex;
-			float4 p0;
-			float4 p1;
-			float4 p2;
-			float4 p3;
+			float4 _MainTex_ST;
 			
 			v2f vert (appdata v)
 			{
 				v2f o;
 				o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
-				o.uv.x = v.uv.x * 0.25;
-				o.uv.y = v.uv.y * 0.25 + 0.75;
+				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				return o;
 			}
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				float2 mid;
-				float3 newUV;
-				
-				if (i.uv.x + i.uv.y >= 1) {
-					mid = i.uv;
-					newUV = p0 * (1 - mid.x - mid.y) + p1 * mid.x + p2 * mid.y;
-				} else {
-					mid = float2(1 - i.uv.y, i.uv.x + i.uv.y - 1);
-					newUV = p2 * (1 - mid.x - mid.y) + p1 * mid.x + p3 * mid.y;
-				}
+				fixed4 col = tex2D(_MainTex, i.uv);
 
-				return tex2D(_MainTex, newUV.xy / newUV.zz);
+				//return float4(i.uv, 0, 1);
+				#if UNITY_UV_STARTS_AT_TOP
+					return float4(1, 0, 0, 1);
+				#else
+					return float4(0, 1, 0, 1);
+				#endif
 			}
-
 			ENDCG
 		}
 	}
